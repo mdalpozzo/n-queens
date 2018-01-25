@@ -73,38 +73,37 @@ window.countNRooksSolutions = function(n) {
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
 window.findNQueensSolution = function(n) {
   var solution = new Board({n: n});
-
-  for (var q = 0; q < n; q++) {
-    if (n === 6) {
-      debugger;
+  var solutionFound = false;
+  var recursion = function (boardObj, currentRow) {
+    if (solutionFound === true) {
+      return;
     }
-    // clean board
-    solution = new Board({n: n});
-    var queenCount = 0;
-    // place 1st row queen
-    solution.togglePiece(0, q);
-    queenCount++;
-    //outerloop for rows
-    for (var i = 1; i < n; i++) {
-      //innerloop for columns
-      for (var j = 0; j < n; j++) {
-        solution.togglePiece(i, j);
-        queenCount++;
-        
-        if (solution.hasAnyQueenConflictsOn(i, j) === true) {
-          solution.togglePiece(i, j);
-          queenCount--;
-        } else {
-          break;
-        }
-      }
+    // for every col
+    for (var i = 0; i < n; i++) {
+      // reset currentRow to [0]
+      var reset = new Array(n);
+      reset.fill(0);
+      boardObj.set(currentRow, reset);
+      // put queen in next place
+      boardObj.togglePiece(currentRow, i);
+      // if conflict, undo
+      if (boardObj.hasAnyQueenConflictsOn(currentRow, i)) {
+        boardObj.togglePiece(currentRow, i);
+      // else if we're at the end, count++ and return from function call
+      } else if (currentRow === n - 1) {
+        // here in the logic, we've found a solution
+        solution = boardObj;
+        solutionFound = true;
+        return;
+      // otherwise recurse on a copy of current board and start from next row
+      } else {
+        //not sure about returning recursive call
+        recursion(new Board(boardObj.rows()), currentRow + 1);
+      }      
     }
-    // check queenCount
-    if (queenCount === n) {
-      break;
-    }
-  }
-
+  };
+  
+  recursion(new Board({n: n}), 0);
   console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution.rows()));
   return solution.rows();
 };

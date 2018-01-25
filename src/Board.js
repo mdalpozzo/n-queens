@@ -142,7 +142,10 @@
       var sum = 0;
       var row = rowIndex || 0;
       while (row < this.get('n') && col < this.get('n')) {
-        sum += this.get(row)[col];
+        // if >, passes n = 6; if >=, does not
+        if (col >= 0) {
+          sum += this.get(row)[col];
+        }
         col++;
         row++;
       }
@@ -177,7 +180,9 @@
       var sum = 0;
       var row = rowIndex || 0;
       while (row < this.get('n') && col >= 0) {
-        sum += this.get(row)[col];
+        if (col < this.get('n')) {
+          sum += this.get(row)[col];
+        }
         col--;
         row++;  
       }
